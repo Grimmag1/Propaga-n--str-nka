@@ -226,9 +226,72 @@
             border-color: #FFD600;
         }
 
+        .form-group input.invalid {
+            border-color: #cc3344;
+        }
+
+        .field-error {
+            display: none;
+            color: #cc3344;
+            font-size: 0.78rem;
+            margin-top: 5px;
+            text-align: left;
+        }
+
+        .field-error.visible {
+            display: block;
+        }
+
         .form-submit {
             width: 100%;
             margin-top: 12px;
+        }
+
+        /* ── Social / external links ────────────────────────── */
+        .social-links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: inherit;
+            text-decoration: none;
+            transition: opacity 0.2s, transform 0.1s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .social-link:active { transform: scale(0.97); opacity: 0.85; }
+
+        .social-link.website {
+            background: #FFD600;
+            color: #000000;
+        }
+
+        .social-link.linkedin {
+            background: #0A66C2;
+            color: #ffffff;
+        }
+
+        .social-link.facebook {
+            background: #1877F2;
+            color: #ffffff;
+        }
+
+        @media (hover: hover) {
+            .social-link.website:hover  { opacity: 0.88; }
+            .social-link.linkedin:hover { opacity: 0.88; }
+            .social-link.facebook:hover { opacity: 0.88; }
         }
 
         /* ── Wrong-answer animation ─────────────────────────── */
@@ -352,27 +415,27 @@
         <h1>Gratulujeme!</h1>
         <p>Dokázal jsi, že máš na to stát se bezpečákem.</p>
 
-        <!-- Formspree form — sign up at formspree.io and replace YOUR_FORM_ID -->
-        <form action="https://formspree.io/f/xwvnyrzk" method="POST">
-
-            <input type="hidden" name="_next" value="https://grimmag1.github.io/Propaga-n--str-nka/?submitted=true">
+        <form id="contact-form">
 
             <div class="form-group">
                 <label for="name">Jméno</label>
-                <input id="name" type="text" name="name" placeholder="Vaše jméno" required>
+                <input id="name" type="text" name="name" placeholder="Vaše jméno">
+                <span class="field-error" id="name-error">Zadejte prosím své jméno.</span>
             </div>
 
             <div class="form-group">
                 <label for="email">Email</label>
-                <input id="email" type="text" name="email" placeholder="your@email.com" required>
+                <input id="email" type="email" name="email" placeholder="your@email.com">
+                <span class="field-error" id="email-error">Zadejte platnou emailovou adresu.</span>
             </div>
 
             <div class="form-group">
                 <label for="phone">Telefon</label>
-                <input id="phone" type="text" name="phone" placeholder="+420 123 456 789">
+                <input id="phone" type="tel" name="phone" placeholder="+420 123 456 789">
+                <span class="field-error" id="phone-error">Zadejte platné číslo (min. 9 číslic).</span>
             </div>
 
-            <button type="submit" class="btn form-submit">Nastartovat svou kariéru</button>
+            <button type="submit" id="submit-btn" class="btn form-submit">Nastartovat svou kariéru</button>
         </form>
     </div>
 </div>
@@ -385,20 +448,95 @@
     <div class="card">
         <h1>Děkujeme!</h1>
         <p>Tvé údaje jsme přijali. Brzy se ti ozveme.</p>
+
+        <div class="social-links">
+            <a class="social-link website" href="https://www.safething.cz/" target="_blank" rel="noopener">
+                Navštívit web
+            </a>
+            <a class="social-link linkedin" href="http://www.linkedin.com/company/safething-s-r-o" target="_blank" rel="noopener">
+                Sledovat na LinkedInu
+            </a>
+            <a class="social-link facebook" href="https://www.facebook.com/safething.cz/" target="_blank" rel="noopener">
+                Sledovat na Facebooku
+            </a>
+        </div>
     </div>
 </div>
 
 
 <script>
-    // If returning from Formspree, skip straight to the thank-you screen
-    if (new URLSearchParams(window.location.search).get('submitted') === 'true') {
-        goToStep(5);
-    }
-
     function goToStep(n) {
         document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
         document.getElementById('step' + n).classList.add('active');
     }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+    function showError(inputId, errorId) {
+        document.getElementById(inputId).classList.add('invalid');
+        document.getElementById(errorId).classList.add('visible');
+    }
+
+    function clearError(inputId, errorId) {
+        document.getElementById(inputId).classList.remove('invalid');
+        document.getElementById(errorId).classList.remove('visible');
+    }
+
+    function validateName() {
+        const val = document.getElementById('name').value.trim();
+        if (!val) { showError('name', 'name-error'); return false; }
+        clearError('name', 'name-error'); return true;
+    }
+
+    function validateEmail() {
+        const val = document.getElementById('email').value.trim();
+        if (!emailRegex.test(val)) { showError('email', 'email-error'); return false; }
+        clearError('email', 'email-error'); return true;
+    }
+
+    function validatePhone() {
+        const val = document.getElementById('phone').value.trim();
+        if (!val) { clearError('phone', 'phone-error'); return true; } // optional field
+        const digits = val.replace(/\D/g, '');
+        if (digits.length < 9) { showError('phone', 'phone-error'); return false; }
+        clearError('phone', 'phone-error'); return true;
+    }
+
+    // Validate on blur so errors appear as the user finishes each field
+    document.getElementById('name').addEventListener('blur', validateName);
+    document.getElementById('email').addEventListener('blur', validateEmail);
+    document.getElementById('phone').addEventListener('blur', validatePhone);
+
+    document.getElementById('contact-form').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const ok = validateName() & validateEmail() & validatePhone();
+        if (!ok) return;
+
+        const btn = document.getElementById('submit-btn');
+        btn.disabled = true;
+        btn.textContent = 'Odesílání…';
+
+        try {
+            const res = await fetch('https://formspree.io/f/xwvnyrzk', {
+                method: 'POST',
+                body: new FormData(this),
+                headers: { 'Accept': 'application/json' }
+            });
+
+            if (res.ok) {
+                goToStep(5);
+            } else {
+                btn.disabled = false;
+                btn.textContent = 'Nastartovat svou kariéru';
+                alert('Odeslání se nezdařilo. Zkuste to prosím znovu.');
+            }
+        } catch {
+            btn.disabled = false;
+            btn.textContent = 'Nastartovat svou kariéru';
+            alert('Chyba připojení. Zkontrolujte internet a zkuste znovu.');
+        }
+    });
 
     function handlePicture(el) {
         if (el.getAttribute('correct') === 'true') {
