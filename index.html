@@ -487,7 +487,7 @@
         <div class="options">
             <button class="option" correct="true" onclick="handleOption(this)">Můžu chodit tam, kam ostatní nesmí</button>
             <button class="option" correct="true"  onclick="handleOption(this)">Netuším, ale zní to zajímavě</button>
-            <button class="option" correct="true" onclick="handleOption(this)">Že to není to jen práce v kanceláři, ale dostanu se i do terénu</button>
+            <button class="option" correct="true" onclick="handleOption(this)">Že to není jen práce v kanceláři, ale dostanu se i do terénu</button>
             <button class="option" correct="true" onclick="handleOption(this)">Hledat a analyzovat detaily, které ostatní často přehlédnou</button>
         </div>
     </div>
@@ -551,14 +551,6 @@
                     <option value="">— vyberte —</option>
                 </select>
                 <span class="field-error" id="field3-error">Vyberte prosím možnost.</span>
-            </div>
-
-            <div class="form-group" id="field4-group">
-                <label for="zamereni">Zaměření</label>
-                <select id="zamereni" name="zamereni" class="select-input">
-                    <option value="">— vyberte —</option>
-                </select>
-                <span class="field-error" id="field4-error">Vyberte prosím možnost.</span>
             </div>
 
             <input type="hidden" id="step4-answer" name="zajem" value="">
@@ -655,13 +647,6 @@
         clearError('obor', 'field3-error'); return true;
     }
 
-    function validateField4() {
-        if (!document.getElementById('field4-group').classList.contains('visible')) return true;
-        const sel = document.getElementById('zamereni');
-        if (!sel.value) { showError('zamereni', 'field4-error'); return false; }
-        clearError('zamereni', 'field4-error'); return true;
-    }
-
     // ── Cascading options ──────────────────────────────────────
 
     // Field 2 — Ročník (optional radio buttons)
@@ -690,101 +675,6 @@
                         'Mezinárodní vztahy a diplomacie']
     };
 
-    // Field 4 — Zaměření (required dropdown). Keyed by [studium][obor].
-    // Fill in the actual options for each combination below.
-    const dependentOptions4 = {
-        'Bakalářský': {
-            'Bezpečnostní management':                    [ 'Dovednosti 21. století',
-                                                            'Kriminalistika a kriminologie',
-                                                            'Kybernetická bezpečnost',
-                                                            'Mezinárodní bezpečnost',
-                                                            'Právo a bezpečnost'],
-            'Ekonomika a management podniku':             [ 'Arts a event management',
-                                                            'Bankovnictví a oceňování majetku',
-                                                            'Digitální a brand marketing',
-                                                            'Dovednosti 21. století',
-                                                            'Finanční management a účetnictví',
-                                                            'IT management',
-                                                            'Logistika a management výroby',
-                                                            'Management a rozvoj lidských zdrojů',
-                                                            'Management ve zdravotnictví ',
-                                                            'Manažerská psychologie',
-                                                            'Sales management',
-                                                            'Sportovní management',
-                                                            'Startup a podnikání'],
-            'Cestovní ruch':                              [ 'Destinační management',
-                                                            'Dovednosti 21. století',
-                                                            'Management cestovní kanceláře',
-                                                            'Management hotelových služeb',
-                                                            'Management letecké dopravy',
-                                                            'Management v gastronomii'],
-            'Management a hospodaření ve veřejné správě': [ 'Bezpečnost ČR',
-                                                            'Dovednosti 21. století',
-                                                            'Management cestovního ruchu',
-                                                            'Management lidských zdrojů',
-                                                            'Management rozvoje měst a regionů',
-                                                            'Politologie',
-                                                            'Veřejné finance'],
-            'Marketingová komunikace':                    [ 'Brand management',
-                                                            'Digitální marketing',
-                                                            'Dovednosti 21. století',
-                                                            'Kreativní marketing',
-                                                            'Média'],
-            'Mezinárodní vztahy a diplomacie':            [ 'Diplomatická studia',
-                                                            'Evropská unie a zahraniční politika',
-                                                            'Mezinárodní bezpečnost'],
-            'Personální management':                      [ 'Dovednosti 21. století',
-                                                            'Manažerská psychologie',
-                                                            'Nábor a adaptace zaměstnanců',
-                                                            'Strategický HR management',
-                                                            'Vzdělávání a rozvoj zaměstnanců'],
-            'Psychologie':                                [],
-            'Speciální pedagogika':                       [],
-            'Vzdělání a rozvoj dospělých':                [],
-        },
-        'Navazující': {
-            'Bezpečnostní management':                    [ 'Kriminalistika a kriminologie', 
-                                                            'Právo a bezpečnost',
-                                                            'Zpravodajské služby'],
-            'Cestovní ruch':                              [ 'Management destinace cestovního ruchu',
-                                                            'Management hotelnictví a lázeňství',
-                                                            'Marketingový management v cestovním ruchu a hotelnictví'],
-            'Ekonomika a management podniku':             [ 'Management a rozvoj lidských zdrojů',
-                                                            'Management cestovního ruchu',
-                                                            'Management firemních financí',
-                                                            'Manažerská psychologie',
-                                                            'Marketing a brand management',
-                                                            'Strategický management'],
-            'Management a hospodaření ve veřejné správě': [ 'Bezpečnost ČR',
-                                                            'Management cestovního ruchu',
-                                                            'Management lidských zdrojů',
-                                                            'Management rozvoje měst a regionů',
-                                                            'Politologie',
-                                                            'Veřejné finance'],
-            'Marketingová komunikace':                    [],
-            'Mezinárodní vztahy a diplomacie':            [ 'Diplomatická studia',
-                                                            'Evropská unie a zahraniční politika',
-                                                            'Mezinárodní bezpečnost'],
-        }
-    };
-
-    function populateField4() {
-        const studiumEl = document.querySelector('input[name="studium"]:checked');
-        const oborVal = document.getElementById('obor').value;
-        const sel4 = document.getElementById('zamereni');
-        const opts4 = (studiumEl && oborVal && dependentOptions4[studiumEl.value])
-            ? (dependentOptions4[studiumEl.value][oborVal] || [])
-            : [];
-        sel4.innerHTML = '<option value="">— vyberte —</option>' +
-            opts4.map(opt => `<option value="${opt}">${opt}</option>`).join('');
-        const group4 = document.getElementById('field4-group');
-        if (opts4.length > 0) {
-            group4.classList.add('visible');
-        } else {
-            group4.classList.remove('visible');
-        }
-        clearError('zamereni', 'field4-error');
-    }
 
     document.querySelectorAll('input[name="studium"]').forEach(radio => {
         radio.addEventListener('change', function () {
@@ -798,7 +688,7 @@
             ).join('');
             document.getElementById('field2-group').classList.add('visible');
 
-            // Populate field 3 (select) and reset field 4
+            // Populate field 3 (select)
             const sel = document.getElementById('obor');
             const subs3 = dependentOptions3[this.value] || [];
             sel.innerHTML = '<option value="">— vyberte —</option>' +
@@ -806,15 +696,10 @@
             document.getElementById('field3-group').classList.add('visible');
             clearError('obor', 'field3-error');
 
-            // Field 3 was reset so field 4 should hide until obor is chosen again
-            populateField4();
             clearError('field1', 'field1-error');
         });
     });
 
-    document.getElementById('obor').addEventListener('change', function () {
-        populateField4();
-    });
     // ──────────────────────────────────────────────────────────
 
 
@@ -826,7 +711,7 @@
     document.getElementById('contact-form').addEventListener('submit', async function (e) {
         e.preventDefault();
 
-        const ok = validateName() & validateEmail() & validatePhone() & validateField1() & validateField3() & validateField4();
+        const ok = validateName() & validateEmail() & validatePhone() & validateField1() & validateField3();
         if (!ok) return;
 
         const btn = document.getElementById('submit-btn');
